@@ -22,14 +22,14 @@ public class Selection : MonoBehaviour
             if (Physics.Raycast(ray, out hit, _distance, _selectionLayer))
             {
                 SelectableObj so = hit.collider.GetComponent<SelectableObj>();
-                if (so != null)
+                if (so != null && so != _lastSelected)
                 {
                     if (_lastSelected != null)
                         _lastSelected.Diselect();
                     _lastSelected = so;
                     _lastSelected.Select();
 
-                    _UI.SetPosition(Camera.main.WorldToScreenPoint(_lastSelected._transform.position), so.robot, so);
+                    _UI.SetPosition(Camera.main.WorldToScreenPoint(_lastSelected.head.position), so.robot, so);
 
                     //float _minDst = 270f, _maxDst = 480f;
                     //float scaleMul = 1f - (((transform.position - hit.point).sqrMagnitude - _minDst) / (_maxDst - _minDst)) * .2f;

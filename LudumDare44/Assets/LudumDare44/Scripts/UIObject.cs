@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -8,6 +9,7 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     UIMenu _UIMenu;
 
     [SerializeField] GameObject _obj = null, _objFinal = null;
+    bool built = false;
     [SerializeField] Target[] _targets = null;
 
     [SerializeField] bool _isLeave = false;
@@ -27,15 +29,21 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             if (_isLeave)
             {
                 if (--GameManager.inst.leaveLeft > 0)
+                {
                     GameManager.inst.textLeave.text = string.Format("Leave ({0})", GameManager.inst.leaveLeft);
-                else Debug.Log("Won");
+                    _UIMenu.NewDataValidationFade();
+                }
+                else Menu.inst.End();
             }
+            else _UIMenu.NewDataValidationFade();
         }
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        if (_obj != null) _obj.SetActive(true);
+        if (built) return;
+
+        if (_obj != null && !built) _obj.SetActive(true);
 
         for (int i = 0; i < _targets.Length; i++)
         {
@@ -51,7 +59,9 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        if (_obj != null) _obj.SetActive(false);
+        if (built) return;
+
+        if (_obj != null && !built) _obj.SetActive(false);
 
         for (int i = 0; i < _targets.Length; i++)
         {
@@ -105,5 +115,7 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         yield return new WaitForSeconds(0.6f);
         _objFinal.SetActive(true);
+        built = true;
+        GetComponent<Selectable>().interactable = false;
     }
 }

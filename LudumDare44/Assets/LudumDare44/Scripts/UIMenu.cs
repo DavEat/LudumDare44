@@ -104,17 +104,30 @@ public class UIMenu : MonoBehaviour
         }
 
         v_elect_stock = t_elect_stock;
+        if (v_elect_stock > 100)
+            v_elect_stock = 100;
+        else if (v_elect_stock < 0)
+            v_elect_stock = 0;
+
         v_food_stock = t_food_stock;
         v_gear_stock = t_gear_stock;
 
-        StartCoroutine(NextDay());
-
         return true;
+    }
+
+    public void NewDataValidationFade()
+    {
+        StartCoroutine(NextDay());
     }
 
     void EndOfDay()
     {
         v_elect_stock += v_elect_prod;
+        if (v_elect_stock > 100)
+            v_elect_stock = 100;
+        else if (v_elect_stock < 0)
+            v_elect_stock = 0;
+
         v_food_stock += v_food_prod;
 
         if (v_food_stock <=0 && humans.Count > 0)
@@ -125,7 +138,7 @@ public class UIMenu : MonoBehaviour
                 Debug.Log("Kill 2 human =" + v_food_stock);
 
                 foreach (SelectableObj so in _humans)
-                    so.Removed();
+                    so.Removed(0);
                 humans.Clear();
             }
             else
@@ -135,7 +148,7 @@ public class UIMenu : MonoBehaviour
 
                 SelectableObj so = humans[humans.Keys.First()];
                 humans.Remove(humans.Keys.First());
-                so.Removed();
+                so.Removed(0);
             }
         }
 
@@ -150,23 +163,33 @@ public class UIMenu : MonoBehaviour
     IEnumerator NextDay()
     {
         _fade.enabled = true;
-        yield return Fade(_fade, FadeType.In, .6f);
+        yield return Utility.Fade(_fade, Fade.In, .6f);
         EndOfDay();
         Init();
-        yield return Fade(_fade, FadeType.Out, .6f);
+        yield return Utility.Fade(_fade, Fade.Out, .6f);
         _fade.enabled = false;
     }
+}
 
-    public enum FadeType { In = 0, Out = 1 }
-    public static IEnumerator Fade(Graphic obj, FadeType fade, float duration, float mult = 1)
+public enum Fade { In = 0, Out = 1 }
+public class Utility
+{
+    public static IEnumerator Fade(Graphic obj, Fade fade, float duration, float mult = 1)
+    {
+        yield return Fade(new Graphic[] { obj }, fade, duration, mult);
+    }
+
+    public static IEnumerator Fade(Graphic[] objs, Fade fade, float duration, float mult = 1)
     {
         for (float i = 0; i <= duration; i += Time.unscaledDeltaTime)
         {
-                if (obj != null)
-                    obj.color = new Color(obj.color.r, obj.color.g, obj.color.b, Mathf.Abs(((int)fade) - (i / duration)) * mult);
+            for (int j = 0; j < objs.Length; j++)
+                if (objs[j] != null)
+                    objs[j].color = new Color(objs[j].color.r, objs[j].color.g, objs[j].color.b, Mathf.Abs(((int)fade) - (i / duration)) * mult);
             yield return null;
         }
-        if (obj != null)
-            obj.color = new Color(obj.color.r, obj.color.g, obj.color.b, Mathf.Abs(((int)fade) - 1) * mult);
+        for (int j = 0; j < objs.Length; j++)
+            if (objs[j] != null)
+                objs[j].color = new Color(objs[j].color.r, objs[j].color.g, objs[j].color.b, Mathf.Abs(((int)fade) - 1) * mult);
     }
 }

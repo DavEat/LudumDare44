@@ -7,6 +7,8 @@ public class SelectableObj : MonoBehaviour
 {
     [HideInInspector] public Transform _transform;
 
+    public Transform head;
+
     public string sName;
     public bool robot = true;
     [SerializeField] UnityEvent _onClick = null;
@@ -26,8 +28,8 @@ public class SelectableObj : MonoBehaviour
 
     }
 
-    public void Removed()
+    public void Removed(float time = .6f)
     {
-        Destroy(gameObject, .6f);
+        Destroy(gameObject, time);
     }
 }
