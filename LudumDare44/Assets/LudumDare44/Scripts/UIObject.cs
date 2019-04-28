@@ -1,44 +1,82 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class UIObject : MonoBehaviour
+public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] TextMeshProUGUI _name, _cost, _impact, _sImpact;
-    [SerializeField] Image _impact_img;
-    public string sName, sImpact;
-    public int cost, impact;
+    [SerializeField] Target[] _targets;
 
-    [SerializeField] GameObject _obj = null;
-
-    private void Start()
+    public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        Init(sName, cost, impact, sImpact);
-    }
-
-    public void Init(string name, int cost, int impact, string sImpact)
-    {
-        if (_name == null) _name = GetComponentInChildren<TextMeshProUGUI>();
-        if (_cost == null) _cost = GetComponentInChildren<TextMeshProUGUI>();
-        if (_impact == null) _impact = GetComponentInChildren<TextMeshProUGUI>();
-        if (_sImpact == null) _sImpact = GetComponentInChildren<TextMeshProUGUI>();
-
-        _name.text = sName = name;
-        this.cost = cost;
-        _cost.text = "" + cost;
-        this.impact = impact;
-        _impact.text = "" + impact;
-        _sImpact.text = this.sImpact = sImpact;
-    }
-
-    public void Click()
-    {
-        if (GameManager.inst.player.energy >= cost)
+        for (int i = 0; i < _targets.Length; i++)
         {
-            GameManager.inst.player.energy -= cost;
-            _obj.SetActive(true);
+            SetValue(_targets[i].value, _targets[i].txt);
+        }
+    }
+
+    private void OnMouseEnter()
+    {
+        for (int i = 0; i < _targets.Length; i++)
+        {
+            SetValue(_targets[i].value, _targets[i].txt);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData pointerEventData)
+    {
+        for (int i = 0; i < _targets.Length; i++)
+        {
+            Hide(_targets[i].txt);
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        for (int i = 0; i < _targets.Length; i++)
+        {
+            Hide(_targets[i].txt);
+        }
+    }
+
+    void Hide(TextMeshProUGUI txt)
+    {
+        txt.gameObject.SetActive(false);
+    }
+
+    void SetValue(int v, TextMeshProUGUI txt)
+    {
+        if (v == 0)
+        {
+            Hide(txt);
+            return;
+        }
+        txt.gameObject.SetActive(true);
+
+        string s = "";
+
+        if (v > 0)
+        {
+            s = "+";
+            txt.color = Color.green;
+        }
+        else txt.color = Color.red;
+
+        s += v;
+        txt.text = s;
+    }
+
+    [System.Serializable]
+    struct Target
+    {
+        public Resources resources;
+        public int value;
+        public TextMeshProUGUI txt;
+
+        public Target(Resources resources, int value, TextMeshProUGUI txt)
+        {
+            this.resources = resources;
+            this.value = value;
+            this.txt = txt;
         }
     }
 }
