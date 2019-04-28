@@ -1,37 +1,58 @@
-﻿using TMPro;
+﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] Target[] _targets;
+    UIMenu _UIMenu;
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
+    [SerializeField] GameObject _obj = null, _objFinal = null;
+    [SerializeField] Target[] _targets = null;
+
+    [SerializeField] bool _isLeave = false;
+
+    public void OnClick()
     {
-        for (int i = 0; i < _targets.Length; i++)
+        if (_UIMenu == null)
+            _UIMenu = GetComponentInParent<UIMenu>();
+
+        bool success = _UIMenu.AssignNewData(_targets);
+
+        if (success)
         {
-            SetValue(_targets[i].value, _targets[i].txt);
+            if (_objFinal != null)
+                StartCoroutine(Build());
+
+            if (_isLeave)
+            {
+                if (--GameManager.inst.leaveLeft > 0)
+                    GameManager.inst.textLeave.text = string.Format("Leave ({0})", GameManager.inst.leaveLeft);
+                else Debug.Log("Won");
+            }
         }
     }
 
-    private void OnMouseEnter()
+    public void OnPointerEnter(PointerEventData pointerEventData)
     {
+        if (_obj != null) _obj.SetActive(true);
+
         for (int i = 0; i < _targets.Length; i++)
         {
-            SetValue(_targets[i].value, _targets[i].txt);
+            int v = _targets[i].value;
+            if (_targets[i].resources == Resources.food_prod)
+                v *= UIMenu.humanCount;
+            else if (_targets[i].resources == Resources.food_stock && _isLeave)
+                v *= UIMenu.v_food_prod;
+
+            SetValue(v, _targets[i].txt);
         }
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        for (int i = 0; i < _targets.Length; i++)
-        {
-            Hide(_targets[i].txt);
-        }
-    }
+        if (_obj != null) _obj.SetActive(false);
 
-    private void OnMouseExit()
-    {
         for (int i = 0; i < _targets.Length; i++)
         {
             Hide(_targets[i].txt);
@@ -66,7 +87,7 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
 
     [System.Serializable]
-    struct Target
+    public struct Target
     {
         public Resources resources;
         public int value;
@@ -78,5 +99,11 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             this.value = value;
             this.txt = txt;
         }
+    }
+
+    IEnumerator Build()
+    {
+        yield return new WaitForSeconds(0.6f);
+        _objFinal.SetActive(true);
     }
 }

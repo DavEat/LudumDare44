@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Selection : MonoBehaviour
 {
-    bool canSelect = true;
+    //bool canSelect = true;
 
     float _distance = 50;
-    [SerializeField] LayerMask _selectionLayer;
+    [SerializeField] LayerMask _selectionLayer = 0;
 
-    SelectableObj _lastSelected;
+    SelectableObj _lastSelected = null;
 
-    [SerializeField] RectTransform _UI;
+    [SerializeField] LeaveKillParent _UI = null;
 
     void Update()
     {
@@ -29,13 +29,13 @@ public class Selection : MonoBehaviour
                     _lastSelected = so;
                     _lastSelected.Select();
 
-                    _UI.anchoredPosition = Camera.main.WorldToScreenPoint(_lastSelected._transform.position);
+                    _UI.SetPosition(Camera.main.WorldToScreenPoint(_lastSelected._transform.position), so.robot, so);
 
                     //float _minDst = 270f, _maxDst = 480f;
                     //float scaleMul = 1f - (((transform.position - hit.point).sqrMagnitude - _minDst) / (_maxDst - _minDst)) * .2f;
                     //_UI.localScale = Vector2.one * scaleMul;
 
-                    Debug.Log(string.Format("{0} has been selected", _lastSelected.name));
+                    Debug.Log(string.Format("{0} has been selected", _lastSelected.sName));
                 }
             }
             //else _UI.anchoredPosition = Vector2.one * -10;

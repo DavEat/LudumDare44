@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,9 @@ public class GameManager : MonoBehaviour
 
     public PlayerInteraction player;
     public Camp camp;
+
+    public int leaveLeft = 3;
+    public TextMeshProUGUI textLeave;
 
     private void Awake()
     {

@@ -7,7 +7,9 @@ public class SelectableObj : MonoBehaviour
 {
     [HideInInspector] public Transform _transform;
 
-    [SerializeField] UnityEvent _onClick;
+    public string sName;
+    public bool robot = true;
+    [SerializeField] UnityEvent _onClick = null;
 
     private void Start()
     {
@@ -22,5 +24,10 @@ public class SelectableObj : MonoBehaviour
     public void Diselect()
     {
 
+    }
+
+    public void Removed()
+    {
+        Destroy(gameObject, .6f);
     }
 }
