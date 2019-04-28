@@ -78,7 +78,7 @@ public class Camp : MonoBehaviour
 
     private void OnUpgradeOrGiveEnergy()
     {
-        _progression.value = Mathf.Clamp01(instock / needs);
+        _progression.value = Mathf.Clamp01((float)instock / needs);
     }
     #endregion
 
