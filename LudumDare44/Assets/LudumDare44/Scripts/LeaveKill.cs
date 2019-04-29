@@ -26,14 +26,14 @@ public class LeaveKill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (_robot)
         {
-            UIMenu.robotCount--;
+            _UIMenu.robotCount--;
             _UIMenu.robots.Remove(parent.so.sName);
             if (_kill)
                 _UIMenu.v_gear_stock += 15;
         }
         else
         {
-            UIMenu.humanCount--;
+            _UIMenu.humanCount--;
             _UIMenu.humans.Remove(parent.so.sName);
             if (_kill)
                 _UIMenu.v_food_stock += 15;
@@ -51,8 +51,8 @@ public class LeaveKill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         //leave or kill
         if (_robot)
-            SetValue(-UIMenu.elec_prod_by_robot, _electProd);
-        else SetValue((-UIMenu.v_food_prod) / UIMenu.humanCount, _foodProd);
+            SetValue(-_UIMenu.elec_prod_by_robot, _electProd);
+        else SetValue((-_UIMenu.v_food_prod) / _UIMenu.humanCount, _foodProd);
 
         //kill
         if (_kill) //kill

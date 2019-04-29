@@ -7,6 +7,7 @@ public class LeaveKillParent : MonoBehaviour
     [SerializeField] RectTransform _rect = null;
     public bool robot;
     [HideInInspector] public SelectableObj so  =null;
+    public UIMenu _UIMenu;
 
     public void SetPosition(Vector2 position, bool robot, SelectableObj so)
     {

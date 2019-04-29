@@ -28,14 +28,14 @@ public class UIMenu : MonoBehaviour
     public Dictionary<string, SelectableObj> robots = new Dictionary<string, SelectableObj>();
 
 
-    public static int humanCount = 2, robotCount = 4;
+    public int humanCount = 2, robotCount = 4;
 
-    public static int base_food_prod = -1, food_prod_by_human = -4, food_prod_bonus = 0;
-    public static int base_elec_prod = 16, elec_prod_by_robot = -2, elec_prod_bonus = 0;
+    public int base_food_prod = -1, food_prod_by_human = -3, food_prod_bonus = 0;
+    public int base_elec_prod = 14, elec_prod_by_robot = -2, elec_prod_bonus = 0;
 
 
-    public static int v_food_prod { get {  return base_food_prod * humanCount + food_prod_by_human * humanCount + food_prod_bonus * humanCount; } }
-    public static int v_elect_prod { get {  return base_elec_prod + elec_prod_by_robot * robotCount + elec_prod_bonus; } }
+    public int v_food_prod { get {  return base_food_prod * humanCount + food_prod_by_human * humanCount + food_prod_bonus * humanCount; } }
+    public int v_elect_prod { get {  return base_elec_prod + elec_prod_by_robot * robotCount + elec_prod_bonus; } }
 
 
     public int v_elect_stock = 0;
@@ -69,7 +69,7 @@ public class UIMenu : MonoBehaviour
         _gear_stock.text = "" + v_gear_stock;
     }
 
-    public bool AssignNewData(UIObject.Target[] data)
+    public bool AssignNewData(UIObject.Target[] data, bool leave = false)
     {
         int t_elect_stock = v_elect_stock;
         int t_food_stock = v_food_stock;
@@ -85,7 +85,9 @@ public class UIMenu : MonoBehaviour
                 case Resources.elect_stock:
                     if (t_elect_stock + data[i].value < 0)
                         return false;
-                    t_elect_stock += data[i].value;
+                    if (leave)
+                        t_elect_stock += data[i].value - v_elect_prod;
+                    else t_elect_stock += data[i].value;
                     break;
                 case Resources.food_prod:
                     food_prod_bonus += data[i].value;
@@ -93,7 +95,9 @@ public class UIMenu : MonoBehaviour
                 case Resources.food_stock:
                     if (t_food_stock + data[i].value < 0)
                         return false;
-                    t_food_stock += data[i].value;
+                    if (leave)
+                        t_food_stock += data[i].value * v_food_prod;
+                    else t_food_stock += data[i].value;
                     break;
                 case Resources.gear_stock:
                     if (t_gear_stock + data[i].value < 0)
@@ -104,11 +108,6 @@ public class UIMenu : MonoBehaviour
         }
 
         v_elect_stock = t_elect_stock;
-        if (v_elect_stock > 100)
-            v_elect_stock = 100;
-        else if (v_elect_stock < 0)
-            v_elect_stock = 0;
-
         v_food_stock = t_food_stock;
         v_gear_stock = t_gear_stock;
 
@@ -130,7 +129,7 @@ public class UIMenu : MonoBehaviour
 
         v_food_stock += v_food_prod;
 
-        if (v_food_stock <=0 && humans.Count > 0)
+        if (v_food_stock < 0 && humans.Count > 0)
         {
             if (v_food_stock < v_food_prod / (float)humanCount)
             {

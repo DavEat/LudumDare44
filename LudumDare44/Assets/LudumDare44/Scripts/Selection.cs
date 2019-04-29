@@ -29,16 +29,25 @@ public class Selection : MonoBehaviour
                     _lastSelected = so;
                     _lastSelected.Select();
 
-                    _UI.SetPosition(Camera.main.WorldToScreenPoint(_lastSelected.head.position), so.robot, so);
+                    Vector2 position = Camera.main.WorldToScreenPoint(_lastSelected.head.position);
+
+                    position.x = (position.x / Screen.width) * 1350;
+                    position.y = (position.y / Screen.height) * 1080;
+
+                    _UI.SetPosition(position, so.robot, so);
 
                     //float _minDst = 270f, _maxDst = 480f;
                     //float scaleMul = 1f - (((transform.position - hit.point).sqrMagnitude - _minDst) / (_maxDst - _minDst)) * .2f;
                     //_UI.localScale = Vector2.one * scaleMul;
 
-                    Debug.Log(string.Format("{0} has been selected", _lastSelected.sName));
+                    //Debug.Log(string.Format("{0} has been selected", _lastSelected.sName));
                 }
             }
-            //else _UI.anchoredPosition = Vector2.one * -10;
+            else
+            {
+                _lastSelected = null;
+                _UI.SetPosition(Vector2.one * -100, true, null);
+            }
         }
     }
 }

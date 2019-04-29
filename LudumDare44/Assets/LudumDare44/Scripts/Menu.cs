@@ -15,13 +15,13 @@ public class Menu : MonoBehaviour
     string[] _texts = 
         {
             "Your little group is on the road \nto reach a better place to live.",
-            "You stop for the first time, the battery of your cars are almost empthy.",
+            "You stop for the first time, the battery of your cars are almost empty.",
         };
 
     string[] _textsEnd =
     {
             "You are finally ready for the last step.",
-            "You ride two full day and night and empthy all the battery,\nand...",
+            "You ride two full day and night and empty all the battery,\nand...",
             "You found a switable place, with some work it could become a nice community.",
             
             "Thank you for playing <3",

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    UIMenu _UIMenu;
+    [SerializeField] UIMenu _UIMenu;
 
     [SerializeField] GameObject _obj = null, _objFinal = null;
     bool built = false;
@@ -14,15 +14,21 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     [SerializeField] bool _isLeave = false;
 
+    [SerializeField] AudioSource _source;
+    [SerializeField] AudioClip _clip;
+
     public void OnClick()
     {
         if (_UIMenu == null)
             _UIMenu = GetComponentInParent<UIMenu>();
 
-        bool success = _UIMenu.AssignNewData(_targets);
+
+        bool success = _UIMenu.AssignNewData(_targets, _isLeave);
 
         if (success)
         {
+            _source.PlayOneShot(_clip);
+
             if (_objFinal != null)
                 StartCoroutine(Build());
 
@@ -31,6 +37,7 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 if (--GameManager.inst.leaveLeft > 0)
                 {
                     GameManager.inst.textLeave.text = string.Format("Leave ({0})", GameManager.inst.leaveLeft);
+
                     _UIMenu.NewDataValidationFade();
                 }
                 else Menu.inst.End();
@@ -49,9 +56,9 @@ public class UIObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             int v = _targets[i].value;
             if (_targets[i].resources == Resources.food_prod)
-                v *= UIMenu.humanCount;
+                v *= _UIMenu.humanCount;
             else if (_targets[i].resources == Resources.food_stock && _isLeave)
-                v *= UIMenu.v_food_prod;
+                v = (v + 1) *_UIMenu.v_food_prod;
 
             SetValue(v, _targets[i].txt);
         }
